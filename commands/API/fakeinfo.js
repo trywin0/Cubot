@@ -12,7 +12,6 @@ module.exports = {
                 try {
                     const msg = await message.channel.send("<:717436253762486302:730023157741650010>  Generating fake information...")
                     let fakeinfo = await bruh()
-                    console.log(fakeinfo)
                     const embed = new Discord.MessageEmbed()
                         .setAuthor(fakeinfo.name, fakeinfo.image, `https://www.babysfirstdomain.com/meaning/${fakeinfo.gender == "male"? "boy":"girl"}/${fakeinfo.name.split(" ")[0].toLowerCase()}`)
                         .setThumbnail(fakeinfo.image)

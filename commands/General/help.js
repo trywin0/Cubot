@@ -35,7 +35,7 @@ module.exports = {
         const helpEmbed = new Discord.MessageEmbed()
         .setTitle("Help")
         .setColor("A2AAFF")
-        .setDescription(`[Invite me](https://discord.com/oauth2/authorize?client_id=${client.user.id}&permissions=8&scope=bot "Invite me to your server")`)
+        .setDescription(`[Invite me](https://discord.com/oauth2/authorize?client_id=${client.user.id}&permissions=8&scope=bot "Invite me to your server")\n[Github repository](https://github.com/trywin0/Cubot "Bot source code")`)
         .addField("**❯ Name**", `\`${command.name}\``)
         .addField("**❯ Aliases**", command.aliases?`\`${command.aliases.join("`, `")}\``:"`None`")
         .addField("**❯ Description**", command.description?`\`${command.description}\``:"`None`")
