@@ -1,11 +1,14 @@
 const Discord = require("discord.js")
 const { prefix } = require("../config.json")
 const { functions } = require("../functions");
+const emojiRegex = require('emoji-regex');
+const eRegex = emojiRegex();
 const { redEmbed, greenEmbed, permEmbed, argsEmbed, errorEmbed } = functions
-const { title } = require("process")
+const automod = require("../models/automod");
+const profanity = require("bad-words")
+const regex = /(([A-Za-z]{3,9}):\/\/)?([-;:&=\+\$,\w]+@{1})?(([-A-Za-z0-9]+\.)+[A-Za-z]{2,3})(:\d+)?((\/[-\+~%\/\.\w]+)?\/?([&?][-\+=&;%@\.\w]+)?(#[\w]+)?)?/
 const cooldowns = new Map()
 exports.run = async(client, message) => {
-
     if (message.channel.type == "dm") return;
 
     function resetCommand(command) {
@@ -18,9 +21,38 @@ exports.run = async(client, message) => {
         client.commands.set(command, pull)
     }
     if (message.author.bot) return;
-    if (message.content == "<@694888432031367259> help" || message.content == "<@!694888432031367259> help") {
+    automod.findOne({ sid: message.guild.id }, (err, res) => {
+        if (err) return console.log(err)
+        if (!res) return;
+        if (res.enables.includes(1)) {
+            let filter = new profanity()
+            if (filter.isProfane(message.content)) {
+                message.delete()
+                return message.channel.send(redEmbed("You are not allowed to swear in this guild!")).then(m => m.delete({ timeout: 5000 }))
+            }
 
-    }
+        }
+        if (res.enables.includes(2)) {
+            if (regex.test(message.content)) {
+                message.delete()
+                return message.channel.send(redEmbed("You are not allowed to send links in this guild!")).then(m => m.delete({ timeout: 5000 }))
+            }
+        }
+        if (res.enables.includes(3)) {
+            if (((message.content.match(/<?(a)?:?(\w{2,32}):(\d{17,19})>?/gi) ? message.content.match(/<?(a)?:?(\w{2,32}):(\d{17,19})>?/gi).length : 0) + (message.content.match(eRegex) ? message.content.match(eRegex).length : 0)) > 6) {
+                message.delete()
+                return message.channel.send(redEmbed("You are not allowed to send that many emojis in this guild!")).then(m => m.delete({ timeout: 5000 }))
+            }
+
+        }
+        if (res.enables.includes(4)) {
+            if (message.mentions.users.size > 4) {
+                message.delete()
+                return message.channel.send(redEmbed("You are not allowed to mass mention in this guild!")).then(m => m.delete({ timeout: 30000 }))
+            }
+
+        }
+    })
     if (message.content.startsWith(prefix)) {
         let cooldownUser = (id, time, cmd) => {
             if (cooldowns.has(cmd)) {

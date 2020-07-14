@@ -1,7 +1,7 @@
 const Discord = require("discord.js");
 const { functions } = require("../../functions");
 const { redEmbed, greenEmbed, permEmbed, argsEmbed, errorEmbed } = functions
-const bruh = require("fakeinfo")
+const bruh = require("../../fakeinfo")
 module.exports = {
         name: "fakeinfo",
         description: "Get fake personal info",
