@@ -28,6 +28,7 @@ mongoose.connect(config.database, {
     useNewUrlParser: true,
     useUnifiedTopology: true,
     useCreateIndex: true,
+    useFindAndModify: false,
 });
 
 const db = mongoose.connection;

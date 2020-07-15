@@ -2,7 +2,6 @@ const Discord = require("discord.js");
 const { functions } = require("../../functions");
 const { redEmbed, greenEmbed, permEmbed, argsEmbed, errorEmbed } = functions
 const automod = require("../../models/automod");
-const { auto } = require("@vitalets/google-translate-api/languages");
 module.exports = {
     name: "automod",
     description: "Configurate the server's auto-moderation settings",
@@ -11,6 +10,8 @@ module.exports = {
     accessibleto: 3,
     run: async(client, message, args) => {
         try {
+            if (!message.member.hasPermission("ADMINISTRATOR")) return message.channel.send(permEmbed("ADMINISTRATOR"))
+
             automod.findOne({ sid: message.guild.id }, async(err, res) => {
                 console.log(res)
                 if (err) console.log(err)
@@ -42,11 +43,12 @@ module.exports = {
                   **2.** Link/URL : ${isenabled(2)?emojis.enabled:emojis.disabled}
                   **3.** Emoji Spam: ${isenabled(3)?emojis.enabled:emojis.disabled}
                   **4.** Mass mention: ${isenabled(4)?emojis.enabled:emojis.disabled}
+                  **5.** Message spam: ${isenabled(5)?emojis.enabled:emojis.disabled}
                 `)
                     .setTimestamp()
                 let msg = await message.channel.send(embed)
-                "1️⃣ 2️⃣ 3️⃣ 4️⃣ 730021591454580766".split(" ").forEach(async e => await msg.react(e))
-                let collector = msg.createReactionCollector((r, u) => u.id == message.author.id && "1️⃣ 2️⃣ 3️⃣ 4️⃣ 697510021386338314".split(" ").includes(r.emoji.name), {});
+                "1️⃣ 2️⃣ 3️⃣ 4️⃣ 5️⃣ 730021591454580766".split(" ").forEach(async e => await msg.react(e))
+                let collector = msg.createReactionCollector((r, u) => u.id == message.author.id && "1️⃣ 2️⃣ 3️⃣ 4️⃣ 5️⃣ 697510021386338314".split(" ").includes(r.emoji.name), {});
                 collector.on("collect", (reaction, user) => {
                     Array.prototype.remove = function(item) {
                         const oldLength = this.length
@@ -71,18 +73,19 @@ module.exports = {
 
                         return false
                     }
-                    let choice = "1️⃣ 2️⃣ 3️⃣ 4️⃣".split(" ").indexOf(reaction.emoji.name) + 1
+                    let choice = "1️⃣ 2️⃣ 3️⃣ 4️⃣ 5️⃣".split(" ").indexOf(reaction.emoji.name) + 1
                     if (!enables.includes(choice) && choice != 0) { enables.push(choice) } else { enables.remove(choice) }
                     const newembed = new Discord.MessageEmbed()
                         .setColor("A2AAFF")
                         .setDescription(
                             `**<:717436253376872500:730022249821765633> Auto Moderation**
-
-              **1.** Swearing : ${isenabled(1)?emojis.enabled:emojis.disabled}
-              **2.** Link/URL : ${isenabled(2)?emojis.enabled:emojis.disabled}
-              **3.** Emoji Spam: ${isenabled(3)?emojis.enabled:emojis.disabled}
-              **4.** Mass mention: ${isenabled(4)?emojis.enabled:emojis.disabled}
-            `)
+    
+                      **1.** Swearing : ${isenabled(1)?emojis.enabled:emojis.disabled}
+                      **2.** Link/URL : ${isenabled(2)?emojis.enabled:emojis.disabled}
+                      **3.** Emoji Spam: ${isenabled(3)?emojis.enabled:emojis.disabled}
+                      **4.** Mass mention: ${isenabled(4)?emojis.enabled:emojis.disabled}
+                      **5.** Message spam: ${isenabled(5)?emojis.enabled:emojis.disabled}
+                    `)
                         .setTimestamp()
                     msg.edit(newembed)
                     if (reaction.emoji.name == "697510021386338314") {

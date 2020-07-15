@@ -1,13 +1,15 @@
 const Discord = require("discord.js")
-const { prefix } = require("../config.json")
 const { functions } = require("../functions");
 const emojiRegex = require('emoji-regex');
 const eRegex = emojiRegex();
 const { redEmbed, greenEmbed, permEmbed, argsEmbed, errorEmbed } = functions
 const automod = require("../models/automod");
+const prefixE = require("../models/prefix");
 const profanity = require("bad-words")
 const regex = /(([A-Za-z]{3,9}):\/\/)?([-;:&=\+\$,\w]+@{1})?(([-A-Za-z0-9]+\.)+[A-Za-z]{2,3})(:\d+)?((\/[-\+~%\/\.\w]+)?\/?([&?][-\+=&;%@\.\w]+)?(#[\w]+)?)?/
 const cooldowns = new Map()
+const spam = new Map()
+const customcommands = require("../models/customcommand")
 exports.run = async(client, message) => {
     if (message.channel.type == "dm") return;
 
@@ -21,6 +23,24 @@ exports.run = async(client, message) => {
         client.commands.set(command, pull)
     }
     if (message.author.bot) return;
+    customcommands.findOne({ sid: message.guild.id, trigger: message.content }, (err, res) => {
+        if (err) console.log(err)
+        if (res) {
+            message.channel.send(res.response)
+        }
+    })
+    let getPrefix = () => {
+        return new Promise((resolve, reject) => {
+
+
+            prefixE.findOne({ sid: message.guild.id }, (err, res) => {
+                if (err) console.log(err) && reject(err)
+                if (!res) resolve("/")
+                if (res) resolve(res.prefix)
+            })
+        })
+    }
+    let prefix = await getPrefix()
     automod.findOne({ sid: message.guild.id }, (err, res) => {
         if (err) return console.log(err)
         if (!res) return;
@@ -51,6 +71,25 @@ exports.run = async(client, message) => {
                 return message.channel.send(redEmbed("You are not allowed to mass mention in this guild!")).then(m => m.delete({ timeout: 30000 }))
             }
 
+        }
+        if (res.enables.includes(5)) {
+            if (!spam.has(message.author.id)) {
+                spam.set(message.author.id, true)
+                const collector = message.channel.createMessageCollector(m => m.author.id == message.author.id, { max: 4, time: 3000 })
+                collector.on("end", async collected => {
+                    if (collected.size > 3) {
+                        message.channel.send(message.author.toString(), redEmbed("Stop spamming!")).then(m => m.delete({ timeout: 10000 }))
+                        let messages = await message.channel.messages.fetch({ limit: 100 })
+                        let i = 0;
+                        messages = messages.filter(m => {
+                            i++;
+                            return i < collected.size && m.author.id == message.author.id
+                        });
+                        message.channel.bulkDelete(messages)
+                    }
+                    spam.delete(message.author.id)
+                })
+            }
         }
     })
     if (message.content.startsWith(prefix)) {
