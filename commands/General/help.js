@@ -23,7 +23,7 @@ module.exports = {
                         const helpEmbed = new Discord.MessageEmbed()
                             .setColor("A2AAFF")
                             .setTitle("Help")
-                            .setDescription(`[Invite me](https://discord.com/oauth2/authorize?client_id=${client.user.id}&permissions=8&scope=bot)`);
+                            .setDescription(`[Invite me](https://discord.com/oauth2/authorize?client_id=${client.user.id}&permissions=8&scope=bot "Invite me to your server")\n[Github repository](https://github.com/trywin0/Cubot "Bot source code")`)
 
                         Categories.forEach(category => {
                                     let amount = client.commands.filter(c => c.category == category).map(m => m.name).length
