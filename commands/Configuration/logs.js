@@ -15,7 +15,7 @@ module.exports = {
                 }
                 let available = (num = Number) => {
                     if (!res) return `<:717436254077321266:730022259653083186>`
-                    let numbers = ["all", "delete", "edit", "joinleave", "mod", "role", "nickname", "channel"]
+                    let numbers = ["all", "delete", "edit", "joinleave", "mod", "role", "member", "channel"]
                     return res[numbers[num]] && client.channels.cache.has(res[numbers[num]]) ? `<:717436253871669328:730021595044904982> ${client.channels.cache.get(res[numbers[num]])}` : `<:717436254077321266:730022259653083186>`
                 }
                 const embed = new Discord.MessageEmbed()
@@ -26,7 +26,7 @@ module.exports = {
                 **[3]** Member joins / leaves : ${available(3)}
                 **[4]** Moderator actions : ${available(4)}
                 **[5]** Role updates : ${available(5)}
-                **[6]** Nickname changes : ${available(6)}
+                **[6]** Member changes : ${available(6)}
                 **[7]** Channel updates : ${available(7)}`)
                     .setColor("A2AAFF")
                     .setFooter("Type numbers from 0-7 and mention a channel to set logs, 0 = all choices\n Example: 147 #log-channel\nType 'cancel' to cancel")
@@ -37,7 +37,7 @@ module.exports = {
                     let channel = msg.mentions.channels.first().id
                     let numbers = msg.content.split(" ")[0].split("").map(n => parseInt(n))
                     numbers.forEach(number => {
-                        let choices = ["all", "delete", "edit", "joinleave", "mod", "role", "nickname", "channel"]
+                        let choices = ["all", "delete", "edit", "joinleave", "mod", "role", "member", "channel"]
                         res[choices[number]] = channel
                     })
                     res.save()

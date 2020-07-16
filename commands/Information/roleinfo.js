@@ -14,7 +14,7 @@ module.exports = {
         try {
             const role = message.mentions.roles.first() || message.guild.roles.cache.find(r => r.name.toLowerCase() == args.join(" ").toLowerCase()) || message.guild.roles.cache.get(args.join(" "))
             if (!role) return message.channel.send(redEmbed("There is no role that has that name or id in this server"))
-            const createdTime = (moment(role.createdTimestamp).format("D") ? moment(role.createdTimestamp).format("D").charAt(moment(role.createdTimestamp).format("D").length - 1) == "1" ? moment(role.createdTimestamp).format("D") + "st" : moment(role.createdTimestamp).format("D").charAt(moment(role.createdTimestamp).format("D").length - 1) == "2" ? moment(role.createdTimestamp).format("D") + "nd" : moment(role.createdTimestamp).format("D").charAt(moment(role.createdTimestamp).format("D").length - 1) == "3" ? moment(role.createdTimestamp).format("D") + "rd" : moment(role.createdTimestamp).format("D") + "th" : moment(role.createdTimestamp).format("D") + "th") + moment(role.createdTimestamp).format(" of MMMM, YYYY")
+            const createdTime = moment(role.createdTimestamp).format('MMMM Do YYYY, h:mm:ss a')
             const color = Color(role.hexColor).rgb(role.hexColor).color
             console.log(role)
             const roleEmbed = new Discord.MessageEmbed()
