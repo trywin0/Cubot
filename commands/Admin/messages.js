@@ -17,16 +17,26 @@ module.exports = {
                     let messages = []
                     for (var i = 0; i < loop; i++) {
                         let num = amount / loop
-                        console.log(Math.round(num))
                         let fetched = await message.channel.messages.fetch({ limit: Math.round(num), before: latest })
                         latest = fetched.lastKey().id
                         fetched.filter(m => m.content != "").forEach(m => messages.push({ user: m.author.tag, pfp: m.author.displayAvatarURL({ format: "png" }), message: m.content, color: m.member.roles.highest.color != 0 ? m.member.roles.highest.hexColor : "#ffffff" }))
 
                     }
-                    const fs = require('fs');
-                    console.log(messages.length)
-                    let htmlstring = `<html>
+                    const convertemojis = (msg) => {
+                        if (/<?(a)?:?(\w{2,32}):(\d{17,19})>?/.test(msg)) {
+                            let matches = (msg).match(/<?(a)?:?(\w{2,32}):(\d{17,19})>?/)
+                            let execs = matches.map(m => /<?(a)?:?(\w{2,32}):(\d{17,19})>?/gm.exec(m))
+                            let modified = msg
+                            Object.values((modified).match(/<?(a)?:?(\w{2,32}):(\d{17,19})>?/gm).map(m => /<?(a)?:?(\w{2,32}):(\d{17,19})>?/gm.exec(m)).map(e => [e[2], e[3], e[1]])).forEach(emoji => {
+                                let emojiHTML = `<img src="https://cdn.discordapp.com/emojis/${emoji[1]}.${emoji[2]?"gif":"png"}?v=1" width="32" height="32" class="emoji" title="${emoji[0]}">`
+                                modified = modified.replace(`<${emoji[2]?"a":""}:${emoji[0]}:${emoji[1]}>`, emojiHTML)
+                            })
+                            return modified
+                        } else { return msg }
 
+                    }
+                    const fs = require('fs');
+                    let htmlstring = `<html>
             <head>
                 <link rel="stylesheet" type="text/css" href="style.css">
                 <title>Cubot messages</title>
@@ -51,8 +61,8 @@ module.exports = {
                        ${messages.reverse().map(m=>(messages.reverse()[messages.reverse().indexOf(m)-1]?messages.reverse()[messages.reverse().indexOf(m)-1].user:undefined) != m.user?`         <div class="messagebox"><img class="pfp hgrab" src="${m.pfp}">
                        <div class="pfpspace"></div>
                        <h3 class="hunderline name hgrab" style="color: ${m.color}">${m.user}</h3>
-                       <div class="message">${m.message}</div>
-                   </div>`:`<div class="thinmsgbox"><div class="mesthin">${m.message}</div></div>`).join("\n")}
+                       <div class="message">${convertemojis(m.message)}</div>
+                   </div>`:`<div class="thinmsgbox"><div class="mesthin">${convertemojis(m.message)}</div></div>`).join("\n")}
             
                             </div>
                             <div id='gap'></div>
@@ -125,7 +135,7 @@ module.exports = {
                     });
                 </script>
                 <style>
-                  
+                   .emoji {vertical-align: middle;}
         body {
             font-family: Arial;
             position: absolute;
