@@ -46,7 +46,7 @@ module.exports = {
                        <div class="pfpspace"></div>
                        <h3 class="hunderline name hgrab" style="color: ${m.color}">${m.user}</h3>
                        <div class="message">${m.message}</div>
-                   </div>`:` <div class="mesthin">${m.message}</div>`).join("\n")}
+                   </div>`:`<div class="thinmsgbox"><div class="mesthin">${m.message}</div></div>`).join("\n")}
             
                             </div>
                             <div id='gap'></div>
