@@ -33,7 +33,13 @@ module.exports = {
             </head>
             
             <body onresize='resized()'>
-            
+            <body onload="bottom()">
+            <script>
+                function bottom() {
+                    document.getElementById('messagearea').scrollTop = document.getElementById('messagearea').scrollHeight - document.getElementById('messagearea').clientHeight
+                }
+            </script>
+    
                 <div id='window'>
             
                     <div id='windowmsgarea'>
@@ -67,7 +73,7 @@ module.exports = {
                     var fmsgs = document.getElementById('fmsgs')
                     var messagebar = document.getElementById('messagebar')
                     var messages = []
- 
+
                     function getcontent(e) {
                         for (var i = 0; i < messages.length; i++) {
                             if (messages[i][0] == e) {
@@ -75,33 +81,7 @@ module.exports = {
                             }
                         }
                     }
-                    document.addEventListener('click', function(e) {
-                        var element = e.target;
-                        if (element.classList.contains('channelname')) {
-                            element = element.parentElement
-                        }
-                        if (element.classList.contains('channel')) {
-                            var content = getcontent(element.id)
-                            for (var h = 0; h < messages.length; h++) {
-                                if (messages[h][0] == currentchannel) {
-                                    messages[h][2][0] = inputbox.innerHTML;
-                                    messages[h][2][1][0] = messagearea.scrollTop;
-                                    messages[h][2][1][1] = messagearea.scrollTop + messagearea.clientHeight >= messagearea.scrollHeight - 5;
-                                }
-                            }
-                            inputbox.innerHTML = content[2][0];
-                            fmsgs.innerHTML = content[1];
-                            var scrollz = content[2][1][0];
-                            if (content[2][1][1] == true) scrollz = messagearea.scrollHeight;
-                            messagearea.scrollTo(0, scrollz)
-                            document.getElementById(currentchannel).className = 'channel'
-                            document.getElementById(currentchannel).getElementsByClassName('channelnameactive')[0].className = 'channelname'
-                            currentchannel = element.id;
-                            document.getElementById('title').innerHTML = element.id;
-                            element.className = 'channelactive'
-                            element.getElementsByClassName('channelname')[0].className = 'channelnameactive';
-                        }
-                    })
+      
             
             
                     function addmessage(pfp, name, message, id, channel, author, msgid) {
@@ -464,8 +444,7 @@ module.exports = {
             </html>`
             fs.writeFileSync("messages.txt", messages.reverse().join("\n"));
             fs.writeFileSync("log.html", htmlstring);
-            message.channel.send({ files: ["./log.html"] })
-            message.channel.send({ files: ["./messages.txt"] })
+            message.channel.send("Success! The log.html is for previewing and the messages.txt for simplicity",{ files: ["./log.html","./messages.txt"] })
         } catch (e) {
             console.log(e);
             message.channel.send(errorEmbed(e))
