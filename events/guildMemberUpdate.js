@@ -16,13 +16,11 @@ module.exports.run = (client, oldMember, newMember) => {
             changes.push(`• Role added: ${added}`)
         }
     }
-    console.log(changes)
     if (changes.length < 1) return;
     logs.findOne({ sid: newMember.guild.id }, (err, res) => {
         if (!res) return;
         if (!res.member) return;
         let logChannel = newMember.guild.channels.cache.get(res.member)
-        console.log(logChannel.name)
         if (!logChannel) return;
         const joinEmbed = new Discord.MessageEmbed()
             .setColor("00E5A0")

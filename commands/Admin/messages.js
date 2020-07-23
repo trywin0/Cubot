@@ -18,9 +18,9 @@ module.exports = {
                     for (var i = 0; i < loop; i++) {
                         let num = amount / loop
                         let fetched = await message.channel.messages.fetch({ limit: Math.round(num), before: latest })
-                        latest = fetched.lastKey().id
+                        latest = fetched.last().id
                         fetched.filter(m => m.content != "").forEach(m => messages.push({ user: m.author.tag, pfp: m.author.displayAvatarURL({ format: "png" }), message: m.content, color: m.member.roles.highest.color != 0 ? m.member.roles.highest.hexColor : "#ffffff" }))
-
+                        console.log(fetched.size)
                     }
                     const convertemojis = (msg) => {
                         if (/<?(a)?:?(\w{2,32}):(\d{17,19})>?/.test(msg)) {
@@ -452,9 +452,9 @@ module.exports = {
             </body>
             
             </html>`
-            fs.writeFileSync("messages.txt", messages.reverse().join("\n"));
+            fs.writeFileSync("messages.txt", messages.map(m=>`${m.user} : ${m.message}`).reverse().join("\n"));
             fs.writeFileSync("log.html", htmlstring);
-            message.channel.send("Success! The log.html is for previewing and the messages.txt for simplicity",{ files: ["./log.html","./messages.txt"] })
+            message.channel.send("Success!",{ files: ["./log.html","./messages.txt"] })
         } catch (e) {
             console.log(e);
             message.channel.send(errorEmbed(e))

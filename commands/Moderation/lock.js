@@ -1,8 +1,7 @@
 const Discord = require("discord.js");
 const { functions } = require("../../functions")
-const { redEmbed, greenEmbed, permEmbed, argsEmbed, errorEmbed } = functions
+const { redEmbed, greenEmbed, permEmbed, argsEmbed, errorEmbed, perm } = functions
 const prefix = require("../../models/prefix")
-
 module.exports = {
     name: "lock",
     accessibleto: 1,

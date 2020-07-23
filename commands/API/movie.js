@@ -2,7 +2,7 @@ const Discord = require("discord.js");
 const fetch = require("node-fetch")
 const { functions } = require("../../functions");
 const { ar } = require("@vitalets/google-translate-api/languages");
-const { redEmbed, greenEmbed, permEmbed, argsEmbed, errorEmbed } = functions
+const { redEmbed, greenEmbed, permEmbed, argsEmbed, errorEmbed, perm } = functions
 module.exports = {
     name: "movie",
     description: "Get some information on a movie!",

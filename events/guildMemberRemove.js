@@ -2,6 +2,15 @@ const logs = require("../models/logs")
 const inviteTracker = require("../models/inviteTracker")
 const Discord = require("discord.js")
 const moment = require("moment")
+const goodbye = require("../models/goodbye");
+const findOne = (obj) => {
+    return new Promise((res, rej) => {
+        goodbye.findOne(obj, (e, r) => {
+            if (e) return rej(e)
+            res(r)
+        })
+    })
+}
 exports.run = async(client, member) => {
         console.log(`
     ___ Member left _____
@@ -31,6 +40,12 @@ exports.run = async(client, member) => {
             .setThumbnail(member.user.displayAvatarURL({ dynamic: true, format: "png" }))
         logChannel.send(joinEmbed)
                     })
+                 
 
     })
+    findOne({sid: member.guild.id}).then(guild=>{
+         if(!guild) return;
+         if(!member.guild.channels.cache.has(guild.channel)) return;
+         member.guild.channels.cache.get(guild.channel).send(guild.message.replace("{member}", member))
+    }).catch(console.log)
 }

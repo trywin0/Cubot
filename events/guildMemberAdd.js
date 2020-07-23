@@ -3,6 +3,15 @@ const inviteTracker = require("../models/inviteTracker")
 const Discord = require("discord.js")
 let invites = require("./ready").invites
 const moment = require("moment")
+const welcome = require("../models/welcome");
+const findOne = (obj) => {
+    return new Promise((res, rej) => {
+        welcome.findOne(obj, (e, r) => {
+            if (e) return rej(e)
+            res(r)
+        })
+    })
+}
 exports.run = async(client, member) => {
         let guildInvites = await member.guild.fetchInvites().catch(e => console.log(e))
         const ei = invites[member.guild.id];
@@ -11,7 +20,7 @@ exports.run = async(client, member) => {
         if (ei) {
             invites[member.guild.id] = guildInvites;
             if (!guildInvites) return;
-            invite = guildInvites.find(i => ei.get(i.code).uses < i.uses);
+            invite = guildInvites.find(i => ei.get(i.code) ? ei.get(i.code).uses : -100 < i.uses);
             inviter = client.users.cache.get(invite.inviter.id);
             inviteTracker.findOne({ sid: member.guild.id, user: member.id }, (err, res) => {
                 if (err) console.log(err)
@@ -27,7 +36,6 @@ exports.run = async(client, member) => {
     ___ Member joined _____
     ${member.user.tag} joined ${member.guild.name} using invite link ${invite}
     _______________________`)
-        const truncate = (input) => input.length > 1800 ? `${input.substring(0, 1800)}...` : input;
         logs.findOne({ sid: member.guild.id }, (err, res) => {
                     if (!res) return;
                     if (!res.joinleave) return;
@@ -49,4 +57,9 @@ exports.run = async(client, member) => {
             .setThumbnail(member.user.displayAvatarURL({ dynamic: true, format: "png" }))
         logChannel.send(joinEmbed)
     })
+    findOne({sid: member.guild.id}).then(guild=>{
+         if(!guild) return;
+         if(!member.guild.channels.cache.has(guild.channel)) return;
+         member.guild.channels.cache.get(guild.channel).send(guild.message.replace("{member}", member))
+    }).catch(console.log)
 }
