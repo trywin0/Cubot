@@ -3,3 +3,4 @@
 config.json
 *.html
 node_modules
+*.txt
