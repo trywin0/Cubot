@@ -27,7 +27,7 @@ module.exports = {
 
                         Categories.forEach(category => {
                                     let amount = client.commands.filter(c => c.category == category).map(m => m.name).length
-                                    helpEmbed.addField(`**❯ ${category}**  [${amount}]`, `\`${client.commands.filter(c=>c.category == category).map(m=>m.name).join("`, `")}\``)
+                                    helpEmbed.addField(`❯ ${category}  [${amount}]`, `\`${client.commands.filter(c=>c.category == category).map(m=>m.name).join("`, `")}\``)
             })
             message.channel.send(helpEmbed)
         }else if(client.commands.has(args[0]) || client.commands.find(e=>e.aliases && e.aliases.includes(args[0]))){

@@ -3,6 +3,6 @@ const mongoose = require('mongoose'),
 const schema = new Schema({
     sid: { type: String, default: null },
     trigger: { type: String, default: null },
-    response: { type: String, default: null }
+    code: { type: String, default: null }
 });
-module.exports = mongoose.model("customcommand", schema);
+module.exports = mongoose.model("codecommand", schema);

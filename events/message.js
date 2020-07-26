@@ -23,10 +23,34 @@ exports.run = async(client, message) => {
         client.commands.set(command, pull)
     }
     if (message.author.bot) return;
-    customcommands.findOne({ sid: message.guild.id, trigger: message.content }, (err, res) => {
-        if (err) console.log(err)
-        if (res) {
-            message.channel.send(res.response)
+    customcommands.find({ sid: message.guild.id }, (err, r) => {
+        if (r) {
+            r.forEach(res => {
+                if (err) console.log(err)
+                if (res && message.content.startsWith(res.trigger)) {
+                    const safeEval = require("safe-eval")
+                    let mentioned = message.mentions.users.first()
+                    let context = {
+                        author: {
+                            id: message.author.id,
+                            tag: message.author.tag,
+                            name: message.author.username,
+                            discriminator: message.author.discriminator
+                        },
+                        mentioned: {
+                            id: mentioned ? mentioned.id : null,
+                            tag: mentioned ? mentioned.tag : null,
+                            name: mentioned ? mentioned.username : null,
+                            discriminator: mentioned ? mentioned.discriminator : null
+                        },
+                        message: message.content
+                    }
+                    console.log(res)
+                    let evaled = safeEval(res.code, context)
+                    console.log(evaled)
+                    message.channel.send(evaled)
+                }
+            })
         }
     })
     let getPrefix = () => {
@@ -92,6 +116,7 @@ exports.run = async(client, message) => {
             }
         }
     })
+    if (["<@722807457776140319>", "<@!722807457776140319>", "<@!722807457776140319> help", "<@722807457776140319> help"].includes(message.content)) message.channel.send(greenEmbed(`My prefix for this server is ${prefix}`));
     if (message.content.startsWith(prefix)) {
         let cooldownUser = (id, time, cmd) => {
             if (cooldowns.has(cmd)) {
@@ -113,12 +138,14 @@ exports.run = async(client, message) => {
             if (cooldowns.has(aliascmd.name) && cooldowns.get(aliascmd.name).has(message.author.id)) return message.channel.send(redEmbed("This command is on a cooldown. Please wait and try again later"))
             cooldownUser(message.author.id, cooldown, aliascmd.name)
             resetCommand(aliascmd.name)
+            resetCommand(aliascmd.name)
             command.run(client, message, args)
         } else if (client.commands.has(cmd)) {
             let commandfile = client.commands.get(cmd);
             const cooldown = commandfile.cooldown ? commandfile.cooldown : 5
             if (cooldowns.has(cmd) && cooldowns.get(cmd).has(message.author.id)) return message.channel.send(redEmbed("This command is on a cooldown. Please wait and try again later"))
             cooldownUser(message.author.id, cooldown, cmd)
+            resetCommand(cmd)
             resetCommand(cmd)
             commandfile.run(client, message, args)
         }

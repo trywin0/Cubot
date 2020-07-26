@@ -11,13 +11,13 @@ module.exports = {
             prefix.findOne({ sid: message.guild.id }, (err, res) => {
                 if (err) console.log(err)
                 if (!res) {
-                    let newprefix = prefix.create({ sid: message.guild.id, prefix: args[0] })
+                    let newprefix = prefix.create({ sid: message.guild.id, prefix: args.join(" ") })
                 } else {
-                    res.prefix = args[0]
+                    res.prefix = args.join(" ")
                     res.save()
                 }
 
-                message.channel.send(greenEmbed(`Successfully changed server prefix to ${args[0]}`))
+                message.channel.send(greenEmbed(`Successfully changed server prefix to ${args.join(" ")}`))
             })
         } catch (e) {
             console.log(e)
