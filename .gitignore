@@ -2,4 +2,4 @@
 .config
 config.json
 *.html
-node-modules/
+node_modules
